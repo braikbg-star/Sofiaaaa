@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#211044">
+  <title>Una sorpresa para Sofía</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    :root {
+      font-family: Arial, sans-serif;
+      color: #302044;
+      color-scheme: light;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100svh;
+      padding: 76px 18px 35px;
+      display: grid;
+      place-items: center;
+      overflow-x: hidden;
+      background: linear-gradient(
+        125deg, #101b48, #512378, #a62f85, #253e89
+      );
+      background-size: 350% 350%;
+      animation: fondo 18s ease infinite;
+    }
+
+    @keyframes fondo {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .decoracion {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .flotante {
+      position: absolute;
+      bottom: -90px;
+      left: var(--x);
+      font-size: var(--tamano);
+      opacity: 0;
+      animation: flotar var(--duracion) linear infinite;
+      animation-delay: var(--demora);
+    }
+
+    @keyframes flotar {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+      }
+      12%, 80% { opacity: .45; }
+      100% {
+        transform: translateY(-125vh) rotate(35deg);
+        opacity: 0;
+      }
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 470px);
+    }
+
+    .tarjeta {
+      background: rgba(255, 251, 255, .96);
+      border: 2px solid rgba(255, 255, 255, .65);
+      border-radius: 30px;
+      padding: 28px 24px;
+      text-align: center;
+      box-shadow:
+        0 24px 70px rgba(0, 0, 0, .3),
+        0 0 45px rgba(255, 130, 218, .2);
+    }
+
+    .pasos {
+      display: flex;
+      justify-content: center;
+      gap: 9px;
+      margin-bottom: 23px;
+    }
+
+    .punto {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #dfd5e8;
+      transition: background .3s, transform .3s;
+    }
+
+    .punto.actual {
+      background: #e74896;
+      transform: scale(1.35);
+    }
+
+    .pantalla[hidden] { display: none; }
+
+    .pantalla:not([hidden]) {
+      animation: aparecer .45s ease both;
+    }
+
+    @keyframes aparecer {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .etiqueta {
+      display: inline-block;
+      padding: 7px 13px;
+      margin: 0 0 16px;
+      border-radius: 20px;
+      background: #f3e5ff;
+      color: #7d37a4;
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .foto {
+      display: block;
+      width: 100%;
+      max-width: 310px;
+      max-height: 310px;
+      object-fit: contain;
+      margin: 0 auto 22px;
+      border-radius: 20px;
+      background: #f2eaf7;
+      box-shadow: 0 8px 22px rgba(65, 20, 91, .12);
+    }
+
+    h1, h2 {
+      font-size: clamp(25px, 6vw, 33px);
+      line-height: 1.2;
+      margin: 0 0 14px;
+    }
+
+    p {
+      font-size: 18px;
+      line-height: 1.5;
+      margin: 12px 0;
+      color: #695575;
+    }
+
+    .pequeno {
+      font-size: 13px;
+      line-height: 1.5;
+      color: #85718e;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+      border: 0;
+      border-radius: 18px;
+      min-height: 50px;
+      padding: 14px 23px;
+      font-weight: bold;
+      touch-action: manipulation;
+    }
+
+    button:focus-visible,
+    input:focus-visible {
+      outline: 3px solid #fbbf24;
+      outline-offset: 4px;
+    }
+
+    .principal {
+      background: linear-gradient(120deg, #e9418a, #9252ed);
+      color: white;
+      box-shadow: 0 8px 20px rgba(189, 55, 147, .25);
+      margin-top: 16px;
+      transition: transform .2s;
+    }
+
+    .principal:hover { transform: translateY(-3px); }
+    .ancho { width: 100%; }
+
+    button:disabled {
+      opacity: .65;
+      cursor: wait;
+    }
+
+    .zona-botones {
+      position: relative;
+      height: 155px;
+      margin-top: 22px;
+      border-radius: 20px;
+      background: #f4edf9;
+      overflow: hidden;
+    }
+
+    #botonSi, #botonNo {
+      position: absolute;
+      top: 48px;
+      min-width: 100px;
+      margin: 0;
+    }
+
+    #botonSi { left: 10%; }
+
+    #botonNo {
+      right: 10%;
+      background: #e2dce8;
+      color: #665770;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      font-weight: bold;
+      margin: 22px 0 10px;
+    }
+
+    input[type="date"] {
+      width: 100%;
+      min-width: 0;
+      padding: 15px;
+      font: inherit;
+      border: 2px solid #dcc7ee;
+      border-radius: 15px;
+      background: #fff;
+      color: #4e315f;
+    }
+
+    .aviso {
+      font-size: 14px;
+      min-height: 22px;
+      margin-top: 14px;
+    }
+
+    .error { color: #b52951; }
+
+    #controlMusica {
+      position: fixed;
+      right: 15px;
+      top: 15px;
+      z-index: 5;
+      padding: 10px 15px;
+      min-height: 42px;
+      background: rgba(255, 255, 255, .95);
+      color: #643680;
+      border-radius: 30px;
+      box-shadow: 0 5px 20px #0002;
+      font-size: 13px;
+    }
+
+    #confeti {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    .papel {
+      position: absolute;
+      top: -25px;
+      width: 9px;
+      height: 15px;
+      background: var(--color);
+      left: var(--izquierda);
+      animation: caer var(--tiempo) ease-in forwards;
+      animation-delay: var(--retraso);
+    }
+
+    @keyframes caer {
+      to {
+        transform: translate(var(--desvio), 110vh) rotate(750deg);
+      }
+    }
+
+    .firma {
+      color: rgba(255, 255, 255, .75);
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+    }
+
+    @media (max-width: 360px) {
+      .tarjeta { padding: 24px 16px; }
+      #botonSi { left: 5%; }
+      #botonNo { right: 5%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+      .flotante { display: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="decoracion" id="decoracion" aria-hidden="true"></div>
+  <div id="confeti" aria-hidden="true"></div>
+
+  <!-- Un solo reproductor: la canción no reinicia al avanzar. -->
+  <audio id="musica" loop preload="auto">
+    <source src="cancion.mp3" type="audio/mpeg">
+  </audio>
+
+  <button id="controlMusica" type="button" hidden>
+    🎵 Activar música
+  </button>
+
+  <main>
+    <div class="tarjeta">
+      <div class="pasos" aria-hidden="true">
+        <span class="punto actual"></span>
+        <span class="punto"></span>
+        <span class="punto"></span>
+        <span class="punto"></span>
+        <span class="punto"></span>
+      </div>
+
+      <!-- PANTALLA 1 -->
+      <section class="pantalla" id="pantalla1">
+        <span class="etiqueta">Una entrega especial</span>
+
+        <img
+          class="foto"
+          src="chayanne-hola.jpg"
+          alt="Chayanne saludando"
+        >
+
+        <h1 tabindex="-1">Hola, Sofía 👋</h1>
+        <p>Te tengo una sorpresa 🎁</p>
+
+        <button id="comenzar" class="principal ancho" type="button">
+          Siguiente →
+        </button>
+
+        <p class="pequeno">Mejor con el volumen encendido 🎶</p>
+      </section>
+
+      <!-- PANTALLA 2 -->
+      <section class="pantalla" id="pantalla2" hidden>
+        <span class="etiqueta">Chayanne trae un mensaje</span>
+
+        <img
+          class="foto"
+          src="chayanne-brian.jpg"
+          alt="Chayanne con un mensaje para Sofía"
+        >
+
+        <h2 tabindex="-1">Ya nos reconciliamos…</h2>
+        <p>Te invito a salir por decimosexta vez 😂</p>
+        <p class="pequeno">La perseverancia también es un talento.</p>
+
+        <button class="principal ancho" id="seguir" type="button">
+          Siguiente →
+        </button>
+      </section>
+
+      <!-- PANTALLA 3 -->
+      <section class="pantalla" id="pantalla3" hidden>
+        <span class="etiqueta">La pregunta importante</span>
+
+        <img
+          class="foto"
+          src="chayanne-perdon.jpg"
+          alt="Chayanne esperando tu respuesta"
+        >
+
+        <h2 tabindex="-1">¿Quieres salir conmigo? 💌</h2>
+
+        <div class="zona-botones" id="zonaBotones">
+          <button id="botonSi" class="principal" type="button">
+            Sí 💖
+          </button>
+          <button id="botonNo" type="button">
+            No 🙃
+          </button>
+        </div>
+
+        <p class="pequeno" id="broma" aria-live="polite">
+          Parece que uno de los botones es un poco tímido…
+        </p>
+      </section>
+
+      <!-- PANTALLA 4 -->
+      <section class="pantalla" id="pantalla4" hidden>
+        <span class="etiqueta">Ahora sí, pongamos fecha</span>
+
+        <img
+          class="foto"
+          src="chayanne-final.jpg"
+          alt="Chayanne celebrando"
+        >
+
+        <h2 tabindex="-1">¡Excelente! 🎉</h2>
+        <p>Escoge el día que puedas 📅</p>
+
+        <form id="formularioFecha">
+          <label for="fecha">¿Qué día salimos?</label>
+          <input id="fecha" name="fecha" type="date" required>
+
+          <p class="pequeno">
+            Al confirmar, enviarás tu respuesta y la fecha a Brian.
+          </p>
+
+          <button
+            id="confirmar"
+            class="principal ancho"
+            type="submit"
+          >
+            Confirmar fecha 💌
+          </button>
+
+          <p
+            id="estadoEnvio"
+            class="aviso"
+            role="status"
+            aria-live="polite"
+          ></p>
+        </form>
+      </section>
+
+      <!-- PANTALLA 5 -->
+      <section class="pantalla" id="pantalla5" hidden>
+        <span class="etiqueta">Cita confirmada</span>
+
+        <img
+          class="foto"
+          src="chayanne-final.jpg"
+          alt="Chayanne feliz"
+        >
+
+        <h2 tabindex="-1">Gracias, Sofía ❤️</h2>
+        <p>Tenemos un mes para llegar a diciembre juntos.</p>
+        <p id="fechaFinal"></p>
+        <p class="pequeno">
+          Tu respuesta y la fecha ya se enviaron. 💌
+        </p>
+      </section>
+    </div>
+
+    <div class="firma">
+      Con Chayanne de testigo 🎶
+    </div>
+  </main>
+
+  <script>
+    const ENDPOINT = "https://formspree.io/f/xnppdzzn";
+
+    const musica = document.getElementById("musica");
+    const controlMusica = document.getElementById("controlMusica");
+    const botonSi = document.getElementById("botonSi");
+    const botonNo = document.getElementById("botonNo");
+    const zonaBotones = document.getElementById("zonaBotones");
+    const fecha = document.getElementById("fecha");
+    const estadoEnvio = document.getElementById("estadoEnvio");
+    const confirmar = document.getElementById("confirmar");
+
+    let aceptado = false;
+    let enviando = false;
+    let envioAceptacion = Promise.resolve();
+
+    musica.volume = 0.35;
+
+    function mostrarPantalla(numero) {
+      document.querySelectorAll(".pantalla").forEach((pantalla) => {
+        pantalla.hidden = pantalla.id !== "pantalla" + numero;
+      });
+
+      document.querySelectorAll(".punto").forEach((punto, indice) => {
+        punto.classList.toggle("actual", indice === numero - 1);
+      });
+
+      const titulo = document.querySelector(
+        "#pantalla" + numero + " h1, #pantalla" + numero + " h2"
+      );
+
+      if (titulo) titulo.focus({ preventScroll: true });
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    async function reproducirMusica() {
+      try {
+        await musica.play();
+        controlMusica.textContent = "🔇 Pausar música";
+      } catch {
+        controlMusica.textContent = "🎵 Activar música";
+      }
+    }
+
+    document.getElementById("comenzar").addEventListener("click", () => {
+      controlMusica.hidden = false;
+      reproducirMusica();
+      mostrarPantalla(2);
+    });
+
+    document.getElementById("seguir").addEventListener("click", () => {
+      mostrarPantalla(3);
+    });
+
+    controlMusica.addEventListener("click", () => {
+      if (musica.paused) {
+        reproducirMusica();
+      } else {
+        musica.pause();
+        controlMusica.textContent = "🎵 Activar música";
+      }
+    });
+
+    musica.addEventListener("error", () => {
+      controlMusica.textContent = "⚠️ Audio no disponible";
+    });
+
+    // Decoración del fondo.
+    const simbolos = ["💖", "✨", "🎵", "⭐", "💜", "🎶"];
+    const decoracion = document.getElementById("decoracion");
+
+    for (let i = 0; i < 18; i++) {
+      const elemento = document.createElement("span");
+      elemento.className = "flotante";
+      elemento.textContent = simbolos[i % simbolos.length];
+
+      elemento.style.setProperty("--x", Math.random() * 100 + "%");
+      elemento.style.setProperty("--tamano", 18 + Math.random() * 20 + "px");
+      elemento.style.setProperty("--duracion", 13 + Math.random() * 14 + "s");
+      elemento.style.setProperty("--demora", -Math.random() * 25 + "s");
+
+      decoracion.appendChild(elemento);
+    }
+
+    function lanzarConfeti() {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        return;
+      }
+
+      const contenedor = document.getElementById("confeti");
+      const colores = ["#ff5a9f", "#ffd45c", "#ab78ff", "#62e6d4", "#ffffff"];
+
+      for (let i = 0; i < 65; i++) {
+        const papel = document.createElement("i");
+        papel.className = "papel";
+        papel.style.setProperty("--color", colores[i % colores.length]);
+        papel.style.setProperty("--izquierda", Math.random() * 100 + "%");
+        papel.style.setProperty("--tiempo", 2.5 + Math.random() * 2 + "s");
+        papel.style.setProperty("--retraso", Math.random() * 0.6 + "s");
+        papel.style.setProperty("--desvio", Math.random() * 180 - 90 + "px");
+        contenedor.appendChild(papel);
+
+        papel.addEventListener("animationend", () => papel.remove());
+      }
+    }
+
+    // El "No" se queda dentro de su zona y evita cubrir el "Sí".
+    function moverNo() {
+      const maxX = zonaBotones.clientWidth - botonNo.offsetWidth - 8;
+      const maxY = zonaBotones.clientHeight - botonNo.offsetHeight - 8;
+
+      const siX = botonSi.offsetLeft;
+      const siY = botonSi.offsetTop;
+      const siW = botonSi.offsetWidth;
+      const siH = botonSi.offsetHeight;
+
+      const anteriorX = botonNo.offsetLeft;
+      const anteriorY = botonNo.offsetTop;
+
+      let elegido = null;
+
+      for (let intento = 0; intento < 80; intento++) {
+        const x = 8 + Math.random() * Math.max(0, maxX - 8);
+        const y = 8 + Math.random() * Math.max(0, maxY - 8);
+
+        const cubreSi =
+          x < siX + siW + 6 &&
+          x + botonNo.offsetWidth > siX - 6 &&
+          y < siY + siH + 6 &&
+          y + botonNo.offsetHeight > siY - 6;
+
+        const distancia = Math.hypot(x - anteriorX, y - anteriorY);
+
+        if (!cubreSi && distancia > 45) {
+          elegido = { x, y };
+          break;
+        }
+      }
+
+      if (!elegido) {
+        elegido = {
+          x: Math.max(8, maxX),
+          y: anteriorY > 30 ? 8 : Math.max(8, maxY)
+        };
+      }
+
+      botonNo.style.right = "auto";
+      botonNo.style.left = elegido.x + "px";
+      botonNo.style.top = elegido.y + "px";
+
+      document.getElementById("broma").textContent =
+        "Ese botón salió corriendo 😂";
+    }
+
+    botonNo.addEventListener("pointerenter", (evento) => {
+      if (evento.pointerType === "mouse") moverNo();
+    });
+
+    botonNo.addEventListener("pointerdown", (evento) => {
+      evento.preventDefault();
+      moverNo();
+    });
+
+    botonNo.addEventListener("click", (evento) => {
+      evento.preventDefault();
+      moverNo();
+    });
+
+    // Fecha mínima: hoy, según la fecha local del dispositivo.
+    const hoy = new Date();
+    const anio = hoy.getFullYear();
+    const mes = String(hoy.getMonth() + 1).padStart(2, "0");
+    const dia = String(hoy.getDate()).padStart(2, "0");
+    fecha.min = `${anio}-${mes}-${dia}`;
+
+    async function enviarDatos(campos) {
+      const datos = new FormData();
+
+      Object.entries(campos).forEach(([nombre, valor]) => {
+        datos.append(nombre, valor);
+      });
+
+      const controlador = new AbortController();
+      const limite = setTimeout(() => controlador.abort(), 15000);
+
+      try {
+        const respuesta = await fetch(ENDPOINT, {
+          method: "POST",
+          body: datos,
+          headers: { Accept: "application/json" },
+          signal: controlador.signal
+        });
+
+        if (!respuesta.ok) throw new Error("No se confirmó el envío.");
+      } finally {
+        clearTimeout(limite);
+      }
+    }
+
+    botonSi.addEventListener("click", () => {
+      if (aceptado) return;
+      aceptado = true;
+      botonSi.disabled = true;
+
+      // El envío de la aceptación no bloquea el calendario.
+      envioAceptacion = enviarDatos({
+        nombre: "Sofía",
+        evento: "Aceptó la invitación",
+        respuesta: "Sí, quiero salir con Brian",
+        _subject: "Sofía respondió que sí 💖"
+      }).catch(() => {
+        // La confirmación de fecha también incluirá la respuesta "Sí".
+      });
+
+      mostrarPantalla(4);
+      lanzarConfeti();
+    });
+
+    document.getElementById("formularioFecha").addEventListener(
+      "submit",
+      async (evento) => {
+        evento.preventDefault();
+
+        if (enviando || !fecha.reportValidity()) return;
+
+        const seleccion = fecha.value;
+        const [a, m, d] = seleccion.split("-").map(Number);
+        const fechaLocal = new Date(a, m - 1, d);
+
+        const fechaBonita = new Intl.DateTimeFormat("es-CO", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        }).format(fechaLocal);
+
+        enviando = true;
+        confirmar.disabled = true;
+        confirmar.textContent = "Enviando… 💌";
+        estadoEnvio.classList.remove("error");
+        estadoEnvio.textContent = "Estamos enviando tu fecha.";
+
+        try {
+          await envioAceptacion;
+
+          await enviarDatos({
+            nombre: "Sofía",
+            evento: "Confirmó la fecha",
+            respuesta: "Sí, quiero salir con Brian",
+            fecha: seleccion,
+            fecha_texto: fechaBonita,
+            _subject: "Sofía eligió la fecha de la cita 📅"
+          });
+
+          document.getElementById("fechaFinal").textContent =
+            "📅 Nos vemos el " + fechaBonita + ".";
+
+          mostrarPantalla(5);
+          lanzarConfeti();
+        } catch {
+          estadoEnvio.classList.add("error");
+          estadoEnvio.textContent =
+            "No pudimos confirmar el envío. Revisa tu conexión e inténtalo otra vez.";
+        } finally {
+          enviando = false;
+          confirmar.disabled = false;
+          confirmar.textContent = "Confirmar fecha 💌";
+        }
+      }
+    );
+  </script>
+</body>
+</html>
